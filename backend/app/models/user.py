@@ -9,7 +9,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     username = Column(String(50), nullable=False, unique=True)
     email = Column(String(255), nullable=False, unique=True)
-    password_hash = Column(Text, nullable=False)
+    password_hash = Column(String(255), nullable=False)
     created_at = Column(TIMESTAMP, server_default=func.now())
 
     reviews = relationship("Review", back_populates="user", cascade="all, delete")

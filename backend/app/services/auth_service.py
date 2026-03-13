@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.models.user import User
 from app.schemas import UserCreate, UserLogin
-
+from app.security import hash_password, verify_password
 
 def create_user(db: Session, user_data: UserCreate) -> User:
     # Check if username already exists
@@ -16,25 +16,25 @@ def create_user(db: Session, user_data: UserCreate) -> User:
     if existing_email:
         raise HTTPException(status_code=400, detail="Email already exists")
 
-    # For now, keep it simple
-    # Later you should hash the password instead of storing raw text
+    hashed_pw = hash_password(user_data.password)
+    print("HASHED OK")
     new_user = User(
         username=user_data.username,
         email=user_data.email,
-        password_hash=user_data.password
+        password_hash=hashed_pw
     )
-
+    print("CREATED USER")
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-
+    print("ADDED USER")
     return new_user
 
 def login_user(db: Session, login_data: UserLogin) -> User:
     user = db.query(User).filter(User.email == login_data.email).first()
     if not user:
         raise HTTPException(status_code=400, detail="No user associated with this email")
-    if user.password_hash != login_data.password:
+    if not verify_password(login_data.password, user.password_hash):
         raise HTTPException(status_code=400, detail="Wrong password")
     return user
     
