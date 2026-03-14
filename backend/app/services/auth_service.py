@@ -6,12 +6,10 @@ from app.schemas import UserCreate
 from app.security import hash_password, verify_password
 
 def create_user(db: Session, user_data: UserCreate) -> User:
-    # Check if username already exists
     existing_user = db.query(User).filter(User.username == user_data.username).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="Username already exists")
 
-    # Check if email already exists
     existing_email = db.query(User).filter(User.email == user_data.email).first()
     if existing_email:
         raise HTTPException(status_code=400, detail="Email already exists")
