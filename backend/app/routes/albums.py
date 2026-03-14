@@ -6,7 +6,7 @@ from app.models.user import User
 from app.schemas import AlbumRead, ReviewCreate, ReviewRead
 from app.security import get_current_user
 from app.services.album_service import get_albums, get_album_by_id
-from app.services.review_service import create_album_review
+from app.services.review_service import create_album_review, get_album_reviews
 
 router = APIRouter(prefix="/albums", tags=["albums"])
 
@@ -23,6 +23,11 @@ def get_album(album_id: int, db: Session = Depends(get_db)):
     return get_album_by_id(db, album_id)
 
 
+@router.get("/{album_id}/reviews", response_model=list[ReviewRead])
+def list_album_reviews(album_id: int, db: Session = Depends(get_db)):
+    return get_album_reviews(db, album_id)
+
+
 @router.post("/{album_id}/reviews", response_model=ReviewRead, status_code=201)
 def create_review_for_album(
     album_id: int,
@@ -30,16 +35,5 @@ def create_review_for_album(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    review = create_album_review(db, album_id, current_user, review_data)
-
-    return ReviewRead(
-        id=review.id,
-        album_id=review.album_id,
-        user_id=review.user_id,
-        username=current_user.username,
-        rating=review.rating,
-        content=review.comment,
-        created_at=review.created_at,
-        updated_at=review.updated_at,
-    )
+    return create_album_review(db, album_id, current_user, review_data)
 

@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.models.album import Album
 from app.models.review import Review
@@ -47,5 +47,25 @@ def create_album_review(
             detail="Review already exists for this user on this album",
         )
 
-    db.refresh(new_review)
-    return new_review
+    return (
+        db.query(Review)
+        .options(joinedload(Review.user))
+        .filter(Review.id == new_review.id)
+        .first()
+    )
+
+
+def get_album_reviews(db: Session, album_id: int) -> list[Review]:
+    album = db.query(Album).filter(Album.id == album_id).first()
+    if album is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Album not found")
+
+    reviews = (
+        db.query(Review)
+        .options(joinedload(Review.user))
+        .filter(Review.album_id == album_id)
+        .order_by(Review.created_at.desc())
+        .all()
+    )
+
+    return reviews

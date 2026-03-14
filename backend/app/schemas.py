@@ -17,6 +17,13 @@ class UserRead(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class ReviewUserRead(BaseModel):
+    id: int
+    username: str
+
+    model_config = {"from_attributes": True}
+
+
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
@@ -68,9 +75,9 @@ class ReviewRead(BaseModel):
     id: int
     album_id: int
     user_id: int
-    username: str
     rating: int
-    content: str
+    comment: str | None
+    user: ReviewUserRead
     created_at: datetime
     updated_at: datetime
 
