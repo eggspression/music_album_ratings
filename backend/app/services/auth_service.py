@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from app.models.user import User
-from app.schemas import UserCreate, UserLogin
+from app.schemas import UserCreate
 from app.security import hash_password, verify_password
 
 def create_user(db: Session, user_data: UserCreate) -> User:
@@ -30,11 +30,10 @@ def create_user(db: Session, user_data: UserCreate) -> User:
     print("ADDED USER")
     return new_user
 
-def login_user(db: Session, login_data: UserLogin) -> User:
-    user = db.query(User).filter(User.email == login_data.email).first()
+def authenticate_user(db: Session, email: str, password: str) -> User:
+    user = db.query(User).filter(User.email == email).first()
     if not user:
-        raise HTTPException(status_code=400, detail="No user associated with this email")
-    if not verify_password(login_data.password, user.password_hash):
-        raise HTTPException(status_code=400, detail="Wrong password")
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    if not verify_password(password, user.password_hash):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
     return user
-    
