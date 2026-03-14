@@ -69,3 +69,56 @@ def get_album_reviews(db: Session, album_id: int) -> list[Review]:
     )
 
     return reviews
+
+
+def get_review_by_id(db: Session, review_id: int) -> Review:
+    review = (
+        db.query(Review)
+        .options(joinedload(Review.user))
+        .filter(Review.id == review_id)
+        .first()
+    )
+    if review is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Review not found")
+
+    return review
+
+
+def update_review(
+    db: Session,
+    review_id: int,
+    current_user: User,
+    review_data: ReviewCreate,
+) -> Review:
+    review = get_review_by_id(db, review_id)
+
+    if review.user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to edit this review",
+        )
+
+    review.rating = review_data.rating
+    review.comment = review_data.content
+
+    db.commit()
+
+    return (
+        db.query(Review)
+        .options(joinedload(Review.user))
+        .filter(Review.id == review.id)
+        .first()
+    )
+
+
+def delete_review(db: Session, review_id: int, current_user: User) -> None:
+    review = get_review_by_id(db, review_id)
+
+    if review.user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to delete this review",
+        )
+
+    db.delete(review)
+    db.commit()
