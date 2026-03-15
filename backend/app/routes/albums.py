@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models.user import User
-from app.schemas import AlbumRead, ReviewCreate, ReviewRead
+from app.schemas import ReviewCreate, ReviewRead, AlbumDetailRead, AlbumSummaryRead
 from app.security import get_current_user
 from app.services.album_service import get_albums, get_album_by_id
 from app.services.review_service import create_album_review, get_album_reviews
@@ -11,14 +11,14 @@ from app.services.review_service import create_album_review, get_album_reviews
 router = APIRouter(prefix="/albums", tags=["albums"])
 
 
-@router.get("/", response_model=list[AlbumRead])
+@router.get("/", response_model=list[AlbumSummaryRead])
 def list_albums(sort: str | None = None, 
               search: str | None = None,
               limit: int = 10,
               db: Session = Depends(get_db)):
     return get_albums(db, sort, search, limit)
 
-@router.get("/{album_id}", response_model= AlbumRead)
+@router.get("/{album_id}", response_model= AlbumDetailRead)
 def get_album(album_id: int, db: Session = Depends(get_db)):
     return get_album_by_id(db, album_id)
 

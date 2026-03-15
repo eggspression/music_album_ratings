@@ -24,3 +24,10 @@ class Album(Base):
     __table_args__ = (
         UniqueConstraint("title", "artist_id", name="uq_album_title_artist"),
     )
+
+    @property
+    def artist_name(self) -> str | None:
+        if self.artist is None:
+            return None
+
+        return self.artist.name

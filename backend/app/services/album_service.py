@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import desc
 
 from app.models.album import Album
-from app.schemas import AlbumRead
+
 
 def get_albums(db: Session,
                sort: str | None = None,
