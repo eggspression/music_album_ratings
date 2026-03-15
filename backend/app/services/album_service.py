@@ -1,13 +1,15 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
-from sqlalchemy import desc,asc
+from sqlalchemy import desc, asc, func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
 
 from datetime import date
 
 from app.models.album import Album
+from app.models.review import Review
 from app.models.savedalbum import SavedAlbum
+from app.models.track import Track
 from app.models.user import User
 
 
@@ -45,6 +47,42 @@ def get_album_by_id(db: Session, album_id: int):
     if album is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Album not found")
     return album
+
+
+def get_album_stats(db: Session, album_id: int):
+    get_album_by_id(db, album_id)
+
+    average_rating, review_count = (
+        db.query(func.avg(Review.rating),func.count(Review.id))
+        .filter(Review.album_id == album_id)
+        .first()
+    )
+
+    saved_count = (
+        db.query(func.count(SavedAlbum.album_id))
+        .filter(SavedAlbum.album_id == album_id)
+        .scalar()
+    )
+
+    return {
+        "album_id": album_id,
+        "average_rating": round(float(average_rating), 1) if average_rating is not None else None,
+        "review_count": review_count,
+        "saved_count": saved_count,
+    }
+
+
+def get_album_tracks(db: Session, album_id: int) -> list[Track]:
+    get_album_by_id(db, album_id)
+
+    tracks = (
+        db.query(Track)
+        .filter(Track.album_id == album_id)
+        .order_by(asc(Track.track_number))
+        .all()
+    )
+
+    return tracks
 
 
 def save_album_for_user(db: Session, album_id: int, current_user: User) -> SavedAlbum:

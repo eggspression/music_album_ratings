@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy.orm import Session
-from sqlalchemy import Date
 
 from datetime import date
 
@@ -11,12 +10,16 @@ from app.schemas import (
     ReviewRead,
     AlbumDetailRead,
     AlbumSummaryRead,
+    AlbumStatsRead,
     SavedAlbumRead,
+    TrackRead,
 )
 from app.security import get_current_user
 from app.services.album_service import (
     get_albums,
     get_album_by_id,
+    get_album_stats,
+    get_album_tracks,
     save_album_for_user,
     delete_saved_album_for_user,
 )
@@ -40,6 +43,16 @@ def list_albums(sort: str | None = None,
 @router.get("/{album_id}", response_model= AlbumDetailRead)
 def get_album(album_id: int, db: Session = Depends(get_db)):
     return get_album_by_id(db, album_id)
+
+
+@router.get("/{album_id}/stats", response_model=AlbumStatsRead)
+def get_album_stats_endpoint(album_id: int, db: Session = Depends(get_db)):
+    return get_album_stats(db, album_id)
+
+
+@router.get("/{album_id}/tracks", response_model=list[TrackRead])
+def list_album_tracks(album_id: int, db: Session = Depends(get_db)):
+    return get_album_tracks(db, album_id)
 
 
 @router.get("/{album_id}/reviews", response_model=list[ReviewRead])

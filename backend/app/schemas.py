@@ -68,6 +68,23 @@ class AlbumDetailRead(AlbumSummaryRead):
     model_config = {"from_attributes": True}
 
 
+class AlbumStatsRead(BaseModel):
+    album_id: int
+    average_rating: float | None
+    review_count: int
+    saved_count: int
+
+
+class TrackRead(BaseModel):
+    id: int
+    album_id: int
+    title: str
+    track_number: int
+    duration: int | None
+
+    model_config = {"from_attributes": True}
+
+
 class ReviewCreate(BaseModel):
     rating: int
     content: str = Field(min_length=1)
