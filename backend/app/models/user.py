@@ -13,3 +13,4 @@ class User(Base):
     created_at = Column(TIMESTAMP, server_default=func.now())
 
     reviews = relationship("Review", back_populates="user", cascade="all, delete")
+    saved_albums = relationship("SavedAlbum", back_populates="user", cascade="all, delete")

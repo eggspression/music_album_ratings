@@ -1,11 +1,22 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models.user import User
-from app.schemas import ReviewCreate, ReviewRead, AlbumDetailRead, AlbumSummaryRead
+from app.schemas import (
+    ReviewCreate,
+    ReviewRead,
+    AlbumDetailRead,
+    AlbumSummaryRead,
+    SavedAlbumRead,
+)
 from app.security import get_current_user
-from app.services.album_service import get_albums, get_album_by_id
+from app.services.album_service import (
+    get_albums,
+    get_album_by_id,
+    save_album_for_user,
+    delete_saved_album_for_user,
+)
 from app.services.review_service import create_album_review, get_album_reviews
 
 router = APIRouter(prefix="/albums", tags=["albums"])
@@ -36,4 +47,23 @@ def create_review_for_album(
     current_user: User = Depends(get_current_user),
 ):
     return create_album_review(db, album_id, current_user, review_data)
+
+
+@router.post("/{album_id}/save", response_model=SavedAlbumRead, status_code=status.HTTP_201_CREATED)
+def save_album(
+    album_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return save_album_for_user(db, album_id, current_user)
+
+
+@router.delete("/{album_id}/save", status_code=status.HTTP_204_NO_CONTENT)
+def delete_saved_album(
+    album_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    delete_saved_album_for_user(db, album_id, current_user)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 

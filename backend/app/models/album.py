@@ -20,6 +20,7 @@ class Album(Base):
 
     artist = relationship("Artist", back_populates="albums")
     reviews = relationship("Review", back_populates="album", cascade="all, delete")
+    saved_by_users = relationship("SavedAlbum", back_populates="album", cascade="all, delete")
 
     __table_args__ = (
         UniqueConstraint("title", "artist_id", name="uq_album_title_artist"),

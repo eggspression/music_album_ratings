@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, TIMESTAMP, ForeignKey, UniqueConstraint, Date
+from sqlalchemy import Column, Integer, TIMESTAMP, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database import Base
@@ -10,3 +10,6 @@ class SavedAlbum(Base):
     album_id = Column(Integer, ForeignKey("albums.id", ondelete="CASCADE"), primary_key=True)
 
     saved_at = Column(TIMESTAMP, server_default=func.now())
+
+    user = relationship("User", back_populates="saved_albums")
+    album = relationship("Album", back_populates="saved_by_users")

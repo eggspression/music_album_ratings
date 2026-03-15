@@ -111,3 +111,11 @@ class UserReviewRead(BaseModel):
     album: AlbumSummaryRead
 
     model_config = {"from_attributes": True}
+
+
+class SavedAlbumRead(BaseModel):
+    album_id: int
+    saved_at: datetime
+    album: AlbumSummaryRead
+
+    model_config = {"from_attributes": True}
