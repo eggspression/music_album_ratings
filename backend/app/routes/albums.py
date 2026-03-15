@@ -1,5 +1,8 @@
 from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy.orm import Session
+from sqlalchemy import Date
+
+from datetime import date
 
 from app.database import get_db
 from app.models.user import User
@@ -23,11 +26,16 @@ router = APIRouter(prefix="/albums", tags=["albums"])
 
 
 @router.get("/", response_model=list[AlbumSummaryRead])
-def list_albums(sort: str | None = None, 
-              search: str | None = None,
-              limit: int = 10,
-              db: Session = Depends(get_db)):
-    return get_albums(db, sort, search, limit)
+def list_albums(sort: str | None = None,
+                search: str | None = None,
+                genre: str | None = None,
+                artist_id: int | None = None,
+                start_date: date | None = None,
+                end_date: date | None = None,
+                limit: int = 10,
+                offset: int = 0,
+                db: Session = Depends(get_db)):
+    return get_albums(db, sort, search, genre, artist_id, start_date, end_date, limit, offset)
 
 @router.get("/{album_id}", response_model= AlbumDetailRead)
 def get_album(album_id: int, db: Session = Depends(get_db)):

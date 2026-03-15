@@ -1,8 +1,10 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
-from sqlalchemy import desc
+from sqlalchemy import desc,asc
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
+
+from datetime import date
 
 from app.models.album import Album
 from app.models.savedalbum import SavedAlbum
@@ -12,21 +14,36 @@ from app.models.user import User
 def get_albums(db: Session,
                sort: str | None = None,
                search: str | None = None,
+               genre: str | None = None,
+               artist_id: int | None = None,
+               start_date: date | None = None,
+               end_date: date | None = None,
                limit: int = 10,
+               offset: int = 0,
                ):
     query = db.query(Album)
     if search:
-        query = query.filter(Album.title.ilike(f"%{search}"))
+        query = query.filter(Album.title.ilike(f"%{search}%"))
+    if genre:
+        query = query.filter(Album.genre.ilike(f"%{genre}%"))
+    if artist_id:
+        query = query.filter(Album.artist_id == artist_id)
+    if start_date and end_date:
+        query = query.filter(Album.release_date >= start_date, Album.release_date < end_date)
     if sort == "newest":
         query = query.order_by(desc(Album.release_date))
+    if sort == "oldest":
+        query = query.order_by(asc(Album.release_date))
 
-    albums = query.limit(limit).all()
+    albums = query.offset(offset).limit(limit).all()
 
     return albums
 
 def get_album_by_id(db: Session, album_id: int):
     album = db.query(Album).filter(Album.id == album_id).first()
 
+    if album is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Album not found")
     return album
 
 
