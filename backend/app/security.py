@@ -7,11 +7,14 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
+from app.config import get_required_env, load_env_file
 from app.database import get_db
 from app.models.user import User
 
+load_env_file()
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-SECRET_KEY = os.getenv("JWT_SECRET_KEY", "student-project-secret-key")
+SECRET_KEY = get_required_env("JWT_SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")

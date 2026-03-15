@@ -1,7 +1,10 @@
+from app.config import get_required_env, load_env_file
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-DATABASE_URL = "postgresql://postgres:bc020305@localhost:5432/album_app"
+load_env_file()
+
+DATABASE_URL = get_required_env("DATABASE_URL")
 
 engine = create_engine(DATABASE_URL)
 
