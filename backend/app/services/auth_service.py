@@ -15,17 +15,14 @@ def create_user(db: Session, user_data: UserCreate) -> User:
         raise HTTPException(status_code=400, detail="Email already exists")
 
     hashed_pw = hash_password(user_data.password)
-    print("HASHED OK")
     new_user = User(
         username=user_data.username,
         email=user_data.email,
         password_hash=hashed_pw
     )
-    print("CREATED USER")
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-    print("ADDED USER")
     return new_user
 
 def authenticate_user(db: Session, email: str, password: str) -> User:

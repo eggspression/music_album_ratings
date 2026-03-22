@@ -209,18 +209,11 @@ python -m venv .venv
 
 ### 3. Install dependencies
 
-Install the dependencies your local environment uses for this project.
+Install the backend dependencies from the project root:
 
-If you are managing packages manually, install at least:
-
-- `fastapi`
-- `uvicorn`
-- `sqlalchemy`
-- `psycopg2` or `psycopg2-binary`
-- `python-jose`
-- `passlib`
-- `bcrypt`
-- `email-validator`
+```powershell
+pip install -r requirements.txt
+```
 
 ### 4. Create a PostgreSQL database
 
@@ -292,7 +285,8 @@ If you are exploring the project through Swagger, this is a good order:
 - The project currently focuses on the backend API layer
 - Frontend work is planned but not yet part of the delivered MVP
 - Configuration is handled through `.env` variables
-- The project would benefit further from automated tests and migrations in a future iteration
+- The app now creates missing tables automatically on startup for easier first-time deployment
+- The project would still benefit from automated tests and migrations in a future iteration
 
 ## Future Improvements
 
@@ -305,7 +299,7 @@ If you are exploring the project through Swagger, this is a good order:
 
 ## Live Deployment
 
-Add your deployed links here once available:
+
 
 - API Base URL: `TBD`
 - Swagger Docs: `TBD`
