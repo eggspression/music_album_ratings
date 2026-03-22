@@ -194,7 +194,7 @@ Example:
 ### 1. Clone the repository
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/eggspression/music_album_ratings
 cd music_album_ratings
 ```
 
