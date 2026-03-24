@@ -4,6 +4,11 @@ A REST API built with FastAPI for browsing music albums, viewing artists and tra
 
 This project was built as an API-first backend service with a clean layered structure: routes handle HTTP concerns, services contain business logic, schemas define request and response models, and SQLAlchemy models map the relational database.
 
+## Live Deployment
+
+- API Base URL: `http://217.154.20.48:6767`
+- Swagger Docs: `http://217.154.20.48:6767/docs`
+
 ## Features
 
 - User registration and login with JWT authentication
@@ -297,10 +302,3 @@ If you are exploring the project through Swagger, this is a good order:
 - Improve pagination responses with metadata such as total count
 - Add stricter query parameter validation and standardized error handling
 
-## Live Deployment
-
-
-
-- API Base URL: `TBD`
-- Swagger Docs: `TBD`
-- ReDoc: `TBD`
